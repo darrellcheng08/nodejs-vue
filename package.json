@@ -17,10 +17,18 @@
   "author": "Darrell Cheng",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mysql2": "^2.2.5",
-    "sequelize": "^6.6.2"
+    "regenerator-runtime": "^0.13.7",
+    "sequelize": "^6.6.2",
+    "vee-validate": "^2.1.7",
+    "vue": "^2.6.12",
+    "vue-cookie": "^1.1.4",
+    "vue-route-generator": "^1.0.0",
+    "vue-router": "^3.5.1",
+    "vuetify": "^2.4.11"
   }
 }
