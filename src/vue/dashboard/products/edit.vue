@@ -15,9 +15,7 @@
 
         <v-divider></v-divider>
 
-        <v-stepper-step step="3">
-          Step 3: Schedule
-        </v-stepper-step>
+        <v-stepper-step step="3"> Step 3: Schedule </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -62,12 +60,8 @@
                     ></v-textarea>
                   </v-form>
 
-                  <v-btn color="primary" @click="validateStep(2)">
-                    Next
-                  </v-btn>
-                  <v-btn text @click="cancel">
-                    Cancel
-                  </v-btn>
+                  <v-btn color="primary" @click="validateStep(2)"> Next </v-btn>
+                  <v-btn text @click="cancel"> Cancel </v-btn>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -89,7 +83,7 @@
                       :src="placeholderImage"
                       aspect-ratio="2.5"
                       contain
-                      style="border-radius: 5px;"
+                      style="border-radius: 5px"
                     >
                     </v-img>
 
@@ -140,12 +134,8 @@
                   </v-form>
 
                   <!-- ACTIONS -->
-                  <v-btn color="primary" @click="validateStep(3)">
-                    Next
-                  </v-btn>
-                  <v-btn text @click="step = 1">
-                    Back
-                  </v-btn>
+                  <v-btn color="primary" @click="validateStep(3)"> Next </v-btn>
+                  <v-btn text @click="step = 1"> Back </v-btn>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -173,12 +163,8 @@
                   </v-form>
 
                   <!-- ACTIONS -->
-                  <v-btn color="primary" @click="save">
-                    Submit
-                  </v-btn>
-                  <v-btn text @click="step = 2">
-                    Back
-                  </v-btn>
+                  <v-btn color="primary" @click="save"> Submit </v-btn>
+                  <v-btn text @click="step = 2"> Back </v-btn>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -191,6 +177,7 @@
 
 <script>
 import loading from "@components/Loading.vue";
+import ProductDataService from "@services/ProductDataService";
 
 export default {
   components: {
@@ -234,15 +221,20 @@ export default {
     async initialize() {
       let vm = this;
       let id = this.$route.params.id;
-      const { data } = await axios.get(`/products/${id}`);
-      vm.form = data;
-      let date = new Date(vm.form.date_time).toISOString().substr(0, 11);
-      vm.form.date_time =
-        date +
-        new Date(vm.form.date_time).getHours() +
-        ":" +
-        new Date(vm.form.date_time).getMinutes();
-      vm.images = vm.form.images;
+      ProductDataService.get(id)
+        .then((response) => {
+          vm.form = response.data;
+          let date = new Date(vm.form.created_at).toISOString().substr(0, 11);
+          vm.form.created_at =
+            date +
+            new Date(vm.form.created_at).getHours() +
+            ":" +
+            new Date(vm.form.created_at).getMinutes();
+          // vm.images = vm.form.images;
+        })
+        .catch((e) => {
+          vm.$toast(e, "error");
+        });
     },
 
     async getCategory() {
@@ -283,7 +275,7 @@ export default {
       }
 
       var reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         vm.$emit("input", e.target.result);
       };
       reader.readAsDataURL(files[0]);
@@ -317,23 +309,25 @@ export default {
         formData.append("category_id", vm.form.category_id);
         formData.append("date_time", vm.form.date_time);
         if (vm.delete_images) {
-          $.each(vm.delete_images, function(key, id) {
+          $.each(vm.delete_images, function (key, id) {
             formData.append(`delete_images[${key}]`, id);
           });
         }
         if (vm.image_files) {
-          $.each(vm.image_files, function(key, image) {
+          $.each(vm.image_files, function (key, image) {
             formData.append(`images[${key}]`, image);
           });
         }
-        const { data } = await axios.post(`/product/update`, formData);
-        if (data[0] != "error") {
-          vm.$toast("Product successfully updated.", "success");
-          vm.$router.push("/dashboard/products");
-        } else {
-          vm.$toast(data[1], "error");
-          vm.show_loading = false;
-        }
+
+        ProductDataService.update(formData)
+          .then((response) => {
+            vm.$toast("Product successfully updated.", "success");
+            vm.$router.push("/dashboard/products");
+          })
+          .catch((e) => {
+            vm.$toast(e, "error");
+            vm.show_loading = false;
+          });
       }
     },
 

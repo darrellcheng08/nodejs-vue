@@ -15,9 +15,7 @@
 
         <v-divider></v-divider>
 
-        <v-stepper-step step="3">
-          Step 3: Schedule
-        </v-stepper-step>
+        <v-stepper-step step="3"> Step 3: Schedule </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -62,12 +60,8 @@
                     ></v-textarea>
                   </v-form>
 
-                  <v-btn color="primary" @click="validateStep(2)">
-                    Next
-                  </v-btn>
-                  <v-btn text @click="cancel">
-                    Cancel
-                  </v-btn>
+                  <v-btn color="primary" @click="validateStep(2)"> Next </v-btn>
+                  <v-btn text @click="cancel"> Cancel </v-btn>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -138,12 +132,8 @@
                   </v-form>
 
                   <!-- ACTIONS -->
-                  <v-btn color="primary" @click="validateStep(3)">
-                    Next
-                  </v-btn>
-                  <v-btn text @click="step = 1">
-                    Back
-                  </v-btn>
+                  <v-btn color="primary" @click="validateStep(3)"> Next </v-btn>
+                  <v-btn text @click="step = 1"> Back </v-btn>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -171,12 +161,8 @@
                   </v-form>
 
                   <!-- ACTIONS -->
-                  <v-btn color="primary" @click="save">
-                    Submit
-                  </v-btn>
-                  <v-btn text @click="step = 2">
-                    Back
-                  </v-btn>
+                  <v-btn color="primary" @click="save"> Submit </v-btn>
+                  <v-btn text @click="step = 2"> Back </v-btn>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -189,6 +175,7 @@
 
 <script>
 import loading from "@components/Loading.vue";
+import ProductDataService from "@services/ProductDataService";
 
 export default {
   components: {
@@ -265,7 +252,7 @@ export default {
       }
 
       var reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         vm.$emit("input", e.target.result);
       };
       reader.readAsDataURL(files[0]);
@@ -292,22 +279,25 @@ export default {
         return;
       } else {
         vm.show_loading = true;
+
         const form_data = new FormData();
         form_data.append("name", vm.form.name);
         form_data.append("description", vm.form.description);
         form_data.append("category_id", vm.form.category_id);
-        form_data.append("date_time", vm.form.date_time);
-        $.each(vm.image_files, function(key, image) {
+        // form_data.append("date_time", vm.form.date_time);
+        $.each(vm.image_files, function (key, image) {
           form_data.append(`images[${key}]`, image);
         });
-        const { data } = await axios.post("/products", form_data);
-        if (data[0] != "error") {
-          vm.$toast("Product successfully added!", "success");
-          vm.$router.push("/dashboard/products");
-        } else {
-          vm.$toast(data[1], "error");
-          vm.show_loading = false;
-        }
+
+        ProductDataService.create(form_data)
+          .then((response) => {
+            vm.$toast("Product successfully added!", "success");
+            vm.$router.push("/dashboard/products");
+          })
+          .catch((e) => {
+            vm.$toast(e, "error");
+            vm.show_loading = false;
+          });
       }
     },
 

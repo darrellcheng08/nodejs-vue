@@ -14,11 +14,11 @@ Vue.use(VeeValidate);
 Vue.config.productionTip = false;
 
 window.axios = axios;
-router.afterEach((to, from) => {
-  if (to.hash) {
-    router.push(to.path + "?backurl=" + to.hash.substr(1));
-  }
-});
+// router.afterEach((to, from) => {
+//   if (to.hash) {
+//     router.push(to.path + "?backurl=" + to.hash.substr(1));
+//   }
+// });
 
 new Vue({
   vuetify,

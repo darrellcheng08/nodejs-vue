@@ -1,7 +1,7 @@
 import VueRouter from "vue-router";
 
 // LOGIN
-import LoginPage from "@auth/login";
+import LoginPage from "@auth/login.vue";
 
 const router = new VueRouter({
   mode: "history",
